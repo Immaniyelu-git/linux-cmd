@@ -48,3 +48,16 @@ tmpfs           7.7G     0  7.7G   0% /sys/fs/cgroup
 /dev/sda1        64G   24K   61G   1% /app
 tmpfs           1.6G     0  1.6G   0% /run/user/993
 tmpfs           1.6G     0  1.6G   0% /run/user/1000
+
+
+=====================
+
+
+[root@vm1 app]# growpart /dev/sdb 1
+CHANGED: partition=1 start=2048 old: size=104855552 end=104857600 new: size=125827039 end=125829087
+[root@vm1 app]# resize2fs /dev/sdb1
+resize2fs 1.45.4 (23-Sep-2019)
+Filesystem at /dev/sdb1 is mounted on /app; on-line resizing required
+old_desc_blocks = 4, new_desc_blocks = 4
+The filesystem on /dev/sdb1 is now 15728379 (4k) blocks long.
+
