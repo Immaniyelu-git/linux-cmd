@@ -1,0 +1,50 @@
+rescan:
+
+[opc@vm1 ~]$ sudo dd iflag=direct if=/dev/oracleoci/oraclevdb of=/dev/null count=1
+1+0 records in
+1+0 records out
+512 bytes (512 B) copied, 0.000654173 s, 783 kB/s
+[opc@vm1 ~]$ echo "1" | sudo tee /sys/class/block/`readlink /dev/oracleoci/oraclevdb | cut -d'/' -f 2`/device/rescan
+1
+
+
+
+[root@vm2 ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        7.7G     0  7.7G   0% /dev
+tmpfs           7.7G     0  7.7G   0% /dev/shm
+tmpfs           7.7G  8.8M  7.7G   1% /run
+tmpfs           7.7G     0  7.7G   0% /sys/fs/cgroup
+/dev/sdb3        39G  6.9G   32G  18% /
+/dev/sdb1       200M  7.4M  193M   4% /boot/efi
+/dev/sda1        49G   24K   47G   1% /app
+tmpfs           1.6G     0  1.6G   0% /run/user/993
+tmpfs           1.6G     0  1.6G   0% /run/user/1000
+[root@vm2 ~]# lsblk
+NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sdb      8:16   0 46.6G  0 disk
+├─sdb2   8:18   0    8G  0 part [SWAP]
+├─sdb3   8:19   0 38.4G  0 part /
+└─sdb1   8:17   0  200M  0 part /boot/efi
+sda      8:0    0   65G  0 disk
+├─sda2   8:2    0  512B  0 part
+└─sda1   8:1    0   50G  0 part /app
+[root@vm2 ~]# sudo growpart /dev/sda 1
+CHANGED: partition=1 start=2048 old: size=104855552 end=104857600 new: size=136312799 end=136314847
+[root@vm2 ~]# resize2fs /dev/sda1
+resize2fs 1.45.4 (23-Sep-2019)
+Filesystem at /dev/sda1 is mounted on /app; on-line resizing required
+old_desc_blocks = 4, new_desc_blocks = 5
+The filesystem on /dev/sda1 is now 17039099 (4k) blocks long.
+
+[root@vm2 ~]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        7.7G     0  7.7G   0% /dev
+tmpfs           7.7G     0  7.7G   0% /dev/shm
+tmpfs           7.7G  8.8M  7.7G   1% /run
+tmpfs           7.7G     0  7.7G   0% /sys/fs/cgroup
+/dev/sdb3        39G  6.9G   32G  18% /
+/dev/sdb1       200M  7.4M  193M   4% /boot/efi
+/dev/sda1        64G   24K   61G   1% /app
+tmpfs           1.6G     0  1.6G   0% /run/user/993
+tmpfs           1.6G     0  1.6G   0% /run/user/1000
