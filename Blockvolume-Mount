@@ -1,0 +1,89 @@
+Iscsi commands:
+
+[opc@vm1 ~]$ sudo iscsiadm -m node -o new -T iqn.2015-12.com.oracleiaas:765e1d0a-1fbd-4c43-baa5-3a6eceb68f5d -p 169.254.2.3:3260
+sudo iscsiadm -m node -o update -T iqn.2015-12.com.oracleiaas:765e1d0a-1fbd-4c43-baa5-3a6eceb68f5d -n node.startup -v automatic
+New iSCSI node [tcp:[hw=,ip=,net_if=,iscsi_if=default] 169.254.2.3,3260,-1 iqn.2015-12.com.oracleiaas:765e1d0a-1fbd-4c43-baa5-3a6eceb68f5d] added
+[opc@vm1 ~]$ sudo iscsiadm -m node -o update -T iqn.2015-12.com.oracleiaas:765e1d0a-1fbd-4c43-baa5-3a6eceb68f5d -n node.startup -v automatic
+[opc@vm1 ~]$ sudo iscsiadm -m node -T iqn.2015-12.com.oracleiaas:765e1d0a-1fbd-4c43-baa5-3a6eceb68f5d -p 169.254.2.3:3260 -l
+Logging in to [iface: default, target: iqn.2015-12.com.oracleiaas:765e1d0a-1fbd-4c43-baa5-3a6eceb68f5d, portal: 169.254.2.3,3260] (multiple)
+Login to [iface: default, target: iqn.2015-12.com.oracleiaas:765e1d0a-1fbd-4c43-baa5-3a6eceb68f5d, portal: 169.254.2.3,3260] successful.
+
+--------------------------------
+
+[opc@vm1 ~]$ ll /dev/oracleoci/oraclevddb
+ls: cannot access /dev/oracleoci/oraclevddb: No such file or directory
+[opc@vm1 ~]$ ll /dev/oracleoci/oraclevdb*
+lrwxrwxrwx. 1 root root 6 Aug 31 08:58 /dev/oracleoci/oraclevdb -> ../sdb
+
+
+[opc@vm1 ~]$ sudo fdisk /dev/oracleoci/oraclevdb
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table
+Building a new DOS disklabel with disk identifier 0x18d7d74c.
+
+The device presents a logical sector size that is smaller than
+the physical sector size. Aligning to a physical sector (or optimal
+I/O) size boundary is recommended, or performance may be impacted.
+
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): p
+Partition number (1-4, default 1):
+First sector (2048-104857599, default 2048):
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-104857599, default 104857599):
+Using default value 104857599
+Partition 1 of type Linux and of size 50 GiB is set
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+
+
+[opc@vm1 ~]$ sudo mkfs -t ext4 /dev/oracleoci/oraclevdb1
+mke2fs 1.45.4 (23-Sep-2019)
+Discarding device blocks: done
+Creating filesystem with 13106944 4k blocks and 3276800 inodes
+Filesystem UUID: 249c6321-d357-484d-8779-124e2852490d
+Superblock backups stored on blocks:
+        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+        4096000, 7962624, 11239424
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (65536 blocks):
+done
+Writing superblocks and filesystem accounting information: done
+
+
+[opc@vm1 ~]$ sudo mkdir /u01
+[opc@vm1 ~]$ sudo mount /dev/oracleoci/oraclevdb1 /u01
+[opc@vm1 ~]$
+[opc@vm1 ~]$
+[opc@vm1 ~]$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+devtmpfs        7.7G     0  7.7G   0% /dev
+tmpfs           7.7G     0  7.7G   0% /dev/shm
+tmpfs           7.7G   17M  7.7G   1% /run
+tmpfs           7.7G     0  7.7G   0% /sys/fs/cgroup
+/dev/sda3        39G  6.9G   32G  18% /
+/dev/sda1       200M  7.4M  193M   4% /boot/efi
+tmpfs           1.6G     0  1.6G   0% /run/user/1000
+tmpfs           1.6G     0  1.6G   0% /run/user/993
+tmpfs           1.6G     0  1.6G   0% /run/user/0
+/dev/sdb1        49G   24K   47G   1% /u01
+
+
+fstab entry:
+
+/dev/oracleoci/oraclevdb1 /u01 ext4 defaults,_netdev,nofail 0 2
+
+
