@@ -1,0 +1,109 @@
+[root@inst-2yfq0-demo-pool ~]# lsblk
+NAME               MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                  8:0    0 46.6G  0 disk
+├─sda1               8:1    0  100M  0 part /boot/efi
+├─sda2               8:2    0    2G  0 part /boot
+└─sda3               8:3    0 44.5G  0 part
+  ├─ocivolume-root 252:0    0 29.5G  0 lvm  /
+  └─ocivolume-oled 252:1    0   15G  0 lvm  /var/oled
+sdb                  8:16   0   80G  0 disk
+└─sdb1               8:17   0   80G  0 part /u01
+sdc                  8:32   0   50G  0 disk
+└─sdc1               8:33   0   50G  0 part /data
+[root@inst-2yfq0-demo-pool ~]# sudo dd iflag=direct if=/dev/oracleoci/oraclevdb of=/dev/null count=1
+1+0 records in
+1+0 records out
+512 bytes copied, 0.000740802 s, 691 kB/s
+[root@inst-2yfq0-demo-pool ~]# echo "1" | sudo tee /sys/class/block/`readlink /dev/oracleoci/oraclevdb | cut -d'/' -f 2`/device/rescan
+1
+[root@inst-2yfq0-demo-pool ~]#
+[root@inst-2yfq0-demo-pool ~]#
+[root@inst-2yfq0-demo-pool ~]# lsblk
+NAME               MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                  8:0    0 46.6G  0 disk
+├─sda1               8:1    0  100M  0 part /boot/efi
+├─sda2               8:2    0    2G  0 part /boot
+└─sda3               8:3    0 44.5G  0 part
+  ├─ocivolume-root 252:0    0 29.5G  0 lvm  /
+  └─ocivolume-oled 252:1    0   15G  0 lvm  /var/oled
+sdb                  8:16   0   85G  0 disk
+└─sdb1               8:17   0   80G  0 part /u01
+sdc                  8:32   0   50G  0 disk
+└─sdc1               8:33   0   50G  0 part /data
+
+
+root@inst-2yfq0-demo-pool ~]# parted /dev/oracleoci/oraclevdb
+GNU Parted 3.5
+Using /dev/sdb
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) unit s
+(parted) print
+Model: ORACLE BlockVolume (scsi)
+Disk /dev/sdb: 178257920s
+Sector size (logical/physical): 512B/4096B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start  End         Size        Type     File system  Flags
+ 1      2048s  167772159s  167770112s  primary  ext4
+
+(parted) rm 1
+Warning: Partition /dev/sdb1 is being used. Are you sure you want to continue?
+Yes/No? yes
+Error: Partition(s) 1 on /dev/sdb have been written, but we have been unable to inform the kernel of the change, probably because it/they are in use.
+As a result, the old partition(s) will remain in use.  You should reboot now before making further changes.
+Ignore/Cancel? Ignore
+(parted) mkpart
+Partition type?  primary/extended? primary
+File system type?  [ext2]? ext4
+Start? 2048s
+End? 100%
+(parted) quit
+Information: You may need to update /etc/fstab.
+
+[root@inst-2yfq0-demo-pool ~]# lsblk
+NAME               MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                  8:0    0 46.6G  0 disk
+├─sda1               8:1    0  100M  0 part /boot/efi
+├─sda2               8:2    0    2G  0 part /boot
+└─sda3               8:3    0 44.5G  0 part
+  ├─ocivolume-root 252:0    0 29.5G  0 lvm  /
+  └─ocivolume-oled 252:1    0   15G  0 lvm  /var/oled
+sdb                  8:16   0   85G  0 disk
+└─sdb1               8:17   0   85G  0 part /u01
+sdc                  8:32   0   50G  0 disk
+└─sdc1               8:33   0   50G  0 part /data
+[root@inst-2yfq0-demo-pool ~]# df -h
+Filesystem                  Size  Used Avail Use% Mounted on
+devtmpfs                    4.0M     0  4.0M   0% /dev
+tmpfs                       5.7G     0  5.7G   0% /dev/shm
+tmpfs                       2.3G   17M  2.3G   1% /run
+efivarfs                    256K   35K  217K  14% /sys/firmware/efi/efivars
+/dev/mapper/ocivolume-root   30G   10G   20G  34% /
+/dev/sda2                   2.0G  424M  1.6G  22% /boot
+/dev/sda1                   100M  7.2M   93M   8% /boot/efi
+/dev/mapper/ocivolume-oled   15G  281M   15G   2% /var/oled
+/dev/sdc1                    49G   24K   47G   1% /data
+tmpfs                       1.2G     0  1.2G   0% /run/user/989
+tmpfs                       1.2G     0  1.2G   0% /run/user/1000
+/dev/sdb1                    79G   24K   75G   1% /u01
+[root@inst-2yfq0-demo-pool ~]# resize2fs /dev/oracleoci/oraclevdb1
+resize2fs 1.46.5 (30-Dec-2021)
+Filesystem at /dev/oracleoci/oraclevdb1 is mounted on /u01; on-line resizing required
+old_desc_blocks = 10, new_desc_blocks = 11
+The filesystem on /dev/oracleoci/oraclevdb1 is now 22281984 (4k) blocks long.
+
+[root@inst-2yfq0-demo-pool ~]# df -h
+Filesystem                  Size  Used Avail Use% Mounted on
+devtmpfs                    4.0M     0  4.0M   0% /dev
+tmpfs                       5.7G     0  5.7G   0% /dev/shm
+tmpfs                       2.3G   17M  2.3G   1% /run
+efivarfs                    256K   35K  217K  14% /sys/firmware/efi/efivars
+/dev/mapper/ocivolume-root   30G   10G   20G  34% /
+/dev/sda2                   2.0G  424M  1.6G  22% /boot
+/dev/sda1                   100M  7.2M   93M   8% /boot/efi
+/dev/mapper/ocivolume-oled   15G  281M   15G   2% /var/oled
+/dev/sdc1                    49G   24K   47G   1% /data
+tmpfs                       1.2G     0  1.2G   0% /run/user/989
+tmpfs                       1.2G     0  1.2G   0% /run/user/1000
+/dev/sdb1                    84G   24K   79G   1% /u01
