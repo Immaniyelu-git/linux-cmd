@@ -1,0 +1,74 @@
+Attach a Block Volume to a Compute Instance
+
+You can create, attach, connect, and move volumes. You can also change volume performance, as needed, to meet your storage, performance, and application requirements. After you attach and connect a volume to an instance, you can use the volume like a regular hard drive.
+
+In this practice, you’ll learn how to attach a block volume to a compute instance and perform various configuration tasks on the attached volume.
+
+Tasks
+
+Open the Main Menu and click Compute. Under Compute, click Instances.
+
+In the Instances list, click the instance FRA-AA-LAB12-1-VM-01.
+
+Click the Storage tab.
+
+In the Attached block volumes section, click Attach block volume.
+
+Specify the volume you want to attach to. For example, to use the volume name, choose Select volume, and then select the volume FRA-AA-LAB12-1-BV-01 from the Volume drop-down list.
+
+If the instance supports consistent device paths, and the volume you are attaching is not a boot volume, select the path /dev/oracleoci/oraclevdb from the Device path drop-down list. This enables you to specify a device path for the volume attachment that remains consistent between instance reboots.
+
+In the Attachment type section, select Recommended option which sets Attachment type to Paravirtualized.
+Note: After you attach a volume using the Paravirtualized attachment type, it is ready to use, and you do not need to run any additional commands.
+
+In the Access section, select Read/Write.
+Note: This is the default option for volume attachments and, with this option, an instance can read and write data to the volume.
+
+Click Attach. You now see the state as Attached and, since the attachment type is Paravirtualized, you can use the volume without running any additional commands.
+
+Ensure that you are connected to the instance FRA-AA-LAB12-1-VM-01.
+Note: For help with this, refer to Step 11 in the Create a VM Instance practice.
+
+Run the following command to display information about the block devices:
+
+$ lsblk
+
+
+Note: You now see that the system recognizes a new disk device, and the size is 512 GB.
+
+To verify that the volume is attached to the instance, run the following command:
+
+$ ll /dev/oracleoci/oraclevd*
+
+
+To partition the disk using fdisk, run the following command:
+
+$ sudo fdisk /dev/oracleoci/oraclevda
+
+
+Note: Enter the following responses as seen in the Cloud Shell:
+
+a. Command (m for help): Enter to create a new partition.
+
+b. Select (default p): Enter p.
+
+c. Partition number (1–4, default 1): Press Enter.
+
+d. First sector: Press Enter.
+
+e. Last sector: Press Enter.
+
+f. Command (m for help): Enter w to write the new partition.
+
+To format the partition, run the following command:
+
+$ sudo mkfs -t ext4 /dev/oracleoci/oraclevda1
+
+
+To mount the partition, run the following commands:
+
+$ sudo mkdir -p /mnt/volume1
+$ sudo mount /dev/oracleoci/oraclevda1 /mnt/volume1
+
+
+Note: On Linux instances, if you want to automatically mount volumes on an instance boot, you need to set some specific options in the /etc/fstab file.
