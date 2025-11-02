@@ -1,0 +1,28 @@
+Resize a Block Volume
+
+With online resizing, you can expand the volume size without detaching the volume from an instance.
+
+In this practice, you will resize a block volume.
+
+Tasks
+
+From the Main Menu, select Storage. Under Block Storage, click Block Volumes.
+
+In the row for FRA-AA-LAB12-1-BV-01, click the three dots on the right and select Edit.
+
+Under Volume Size and Performance, enter the new size 1024 in the Volume Size (in GB) field.
+Note: You must specify a larger value than the block volume's current size.
+
+Click Update.
+Note: A window appears with a list of commands. The commands are required to rescan the disk after the volume is provisioned. You need to run these commands so that the operating system identifies the expanded volume size. Click the Copy link to copy the commands, and then click Close to close the window.
+
+Connect to your instance FRA-AA-LAB12-1-VM-01.
+Note: For help with this, refer to Step 11 in the Create a VM Instance practice.
+
+Paste and run the rescan commands you copied in the previous step into your instance session window:
+
+$ sudo dd iflag=direct if=/dev/oracleoci/oraclevda of=/dev/null count=1
+
+$ echo "1" | sudo tee /sys/class/block/`readlink /dev/oracleoci/oraclevda | cut -d'/' -f 
+
+Rescan 
