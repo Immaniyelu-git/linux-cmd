@@ -1,0 +1,55 @@
+
+
+  dnf grouplist
+   dnf groupinstall -y "Server with GUI"
+   dnf install tigervnc-server -y
+
+
+
+
+[opc@linux-9 ~]$ vncpasswd
+Password:
+Verify:
+Would you like to enter a view-only password (y/n)? n
+A view-only password is not used
+[opc@linux-9 ~]$ sudo vi /etc/tigervnc/vncserver
+vncserver-config-defaults   vncserver-config-mandatory  vncserver.users
+[opc@linux-9 ~]$ sudo vi /etc/tigervnc/vncserver.users
+[opc@linux-9 ~]$ cd /etc/tigervnc/
+[opc@linux-9 tigervnc]$ ls
+vncserver-config-defaults  vncserver-config-mandatory  vncserver.users
+[opc@linux-9 tigervnc]$ ls -ltr
+total 12
+-rw-r--r--. 1 root root 482 Oct 22  2024 vncserver-config-mandatory
+-rw-r--r--. 1 root root 592 Jun 23 12:30 vncserver-config-defaults
+-rw-r--r--. 1 root root 163 Nov  3 01:34 vncserver.users
+[opc@linux-9 tigervnc]$ sudo vi vncserver-config-defaults
+[opc@linux-9 tigervnc]$ sudo vi vncserver-config-defaults
+[opc@linux-9 tigervnc]$
+[opc@linux-9 tigervnc]$
+[opc@linux-9 tigervnc]$ sudo systemctl demon reload
+Unknown command verb demon.
+[opc@linux-9 tigervnc]$ sudo systemctl demon-reload
+Unknown command verb demon-reload.
+[opc@linux-9 tigervnc]$ sudo systemctl daemon-reload
+[opc@linux-9 tigervnc]$
+[opc@linux-9 tigervnc]$
+[opc@linux-9 tigervnc]$ sudo systemctl enable --now vncserver@:1.service
+Created symlink /etc/systemd/system/multi-user.target.wants/vncserver@:1.service → /usr/lib/systemd/system/vncserver@.service.
+[opc@linux-9 tigervnc]$
+[opc@linux-9 tigervnc]$
+[opc@linux-9 tigervnc]$ sudo systemctl status vncserver@:1
+● vncserver@:1.service - Remote desktop service (VNC)
+     Loaded: loaded (/usr/lib/systemd/system/vncserver@.service; enabled; preset: disabled)
+     Active: active (running) since Mon 2025-11-03 01:37:52 GMT; 20s ago
+    Process: 126325 ExecStartPre=/usr/libexec/vncsession-restore :1 (code=exited, status=0/SUCCESS)
+    Process: 126334 ExecStart=/usr/libexec/vncsession-start :1 (code=exited, status=0/SUCCESS)
+   Main PID: 126341 (vncsession)
+      Tasks: 0 (limit: 72736)
+     Memory: 1.0M
+        CPU: 25ms
+     CGroup: /system.slice/system-vncserver.slice/vncserver@:1.service
+             ‣ 126341 /usr/sbin/vncsession opc :1
+
+Nov 03 01:37:52 linux-9 systemd[1]: Starting Remote desktop service (VNC)...
+Nov 03 01:37:52 linux-9 systemd[1]: Started Remote desktop service (VNC).
